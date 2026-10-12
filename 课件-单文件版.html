@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>扣好人生第一粒扣子 · 铜陵市第十五中学 707班</title>
+<style>
+/* ============ 玻璃拟态班会课件（性能优化版） ============ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --glass: rgba(255, 255, 255, 0.14);
+  --glass-strong: rgba(255, 255, 255, 0.22);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --text: #fff;
+  --accent: #ffd166;
+  --accent2: #7ee8fa;
+}
+
+html, body {
+  height: 100%;
+  font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  color: var(--text);
+  overflow: hidden;
+}
+
+body {
+  /* 静态渐变背景，去掉持续重绘的 background-position 动画，避免闪屏 */
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 40%, #764ba2 70%, #f093fb 100%);
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 12px;
+}
+
+/* ---------- 动态背景光斑（降低模糊与透明度，减少 GPU 负担） ---------- */
+.bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.blob {
+  position: absolute; border-radius: 50%; filter: blur(42px); opacity: 0.42;
+}
+.b1 { width: 420px; height: 420px; background: #ff6ec4; top: -120px; left: -80px; }
+.b2 { width: 380px; height: 380px; background: #4facfe; bottom: -100px; right: -60px; }
+.b3 { width: 300px; height: 300px; background: #ffd166; top: 40%; left: 55%; }
+.b4 { width: 260px; height: 260px; background: #7ee8fa; bottom: 10%; left: 10%; }
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.08); }
+  66% { transform: translate(-30px, 40px) scale(0.96); }
+}
+
+.grain { position: absolute; inset: 0; opacity: 0.04; background-image: repeating-linear-gradient(45deg, #fff 0 1px, transparent 1px 3px); }
+
+/* ---------- 玻璃通用组件（模糊值调低，防闪屏） ---------- */
+.glass {
+  background: linear-gradient(160deg, rgba(255,255,255,0.22), rgba(255,255,255,0.1));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  border-radius: 18px;
+}
+.glass-inner {
+  background: rgba(255,255,255,0.16);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+}
+
+/* ---------- 顶栏 ---------- */
+.topbar {
+  position: relative; z-index: 5;
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 16px;
+}
+.menu-btn {
+  padding: 8px 14px; color: #fff; font-weight: 800; font-size: 15px; cursor: pointer;
+  white-space: nowrap; transition: background 0.2s, transform 0.2s;
+}
+.menu-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; white-space: nowrap; }
+.brand-badge { font-size: 20px; animation: wiggle 2s ease-in-out infinite; }
+@keyframes wiggle { 0%,100%{transform:rotate(0)} 25%{transform:rotate(10deg)} 75%{transform:rotate(-10deg)} }
+.progress-wrap { flex: 1; height: 8px; border-radius: 8px; background: rgba(255,255,255,0.18); overflow: hidden; }
+.progress { height: 100%; width: 4%; background: linear-gradient(90deg, #ffd166, #ff6ec4); border-radius: 8px; transition: width 0.4s ease; }
+.counter { font-weight: 700; font-variant-numeric: tabular-nums; }
+.timer { padding: 6px 12px; font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; color: var(--accent); }
+.timer.warn { color: #ff5c5c; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.4; } }
+.timer-btn { width: 40px; height: 40px; color: #fff; font-size: 18px; cursor: pointer; transition: all 0.2s; }
+.timer-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.05); }
+
+/* ---------- 幻灯片容器 ---------- */
+.deck { position: relative; z-index: 2; flex: 1; overflow: hidden; }
+.slide {
+  position: absolute; inset: 0;
+  padding: 24px 36px;
+  overflow-y: auto;
+  display: none;
+}
+.slide.active {
+  display: block;
+  opacity: 1;
+  animation: slideIn 0.35s ease-out;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-title {
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 900;
+  margin: 10px 0 22px;
+  background: linear-gradient(90deg, #fff, #ffd166);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ---------- 卡片与排版 ---------- */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.card { padding: 18px 20px; border-radius: 18px; }
+.glass-card {
+  background: linear-gradient(160deg, rgba(255,255,255,0.2), rgba(255,255,255,0.08));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.glass-card:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(0,0,0,0.3); }
+.card h3 { font-size: 19px; margin-bottom: 10px; color: var(--accent); }
+.card p { font-size: 15px; line-height: 1.7; margin-bottom: 8px; }
+.card b { color: #fff; }
+.card p:last-child { margin-bottom: 0; }
+
+.quote-card { text-align: center; margin-top: 16px; }
+.quote { font-size: 17px; font-style: italic; color: #ffe9b3; }
+.big-q { font-size: 23px; font-weight: 700; font-style: normal; }
+.tip-card { display: flex; gap: 12px; align-items: flex-start; margin-top: 16px; background: rgba(255,209,102,0.16); border-color: rgba(255,209,102,0.42); }
+.tip-icon { font-size: 24px; }
+
+.checklist { list-style: none; }
+.checklist li { padding: 6px 0; font-size: 15px; line-height: 1.5; }
+.checklist li::before { content: "✔ "; color: #7ee8fa; font-weight: 700; }
+.checklist.big li { font-size: 18px; padding: 9px 0; }
+
+.chips { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.chips li {
+  padding: 7px 14px; border-radius: 999px; font-weight: 600; font-size: 14px;
+  background: rgba(255,255,255,0.16); border: 1px solid var(--glass-border);
+  transition: background 0.25s, transform 0.25s;
+}
+.chips li:hover { background: rgba(255,209,102,0.32); transform: translateY(-2px); }
+
+/* ---------- 扣子徽章 ---------- */
+.k-badge {
+  display: inline-block; padding: 6px 18px; border-radius: 999px;
+  font-weight: 800; font-size: 15px; margin-bottom: 8px;
+  background: rgba(255,255,255,0.2); border: 1px solid var(--glass-border);
+}
+.k-badge.b1{background:linear-gradient(135deg,#ff6ec4,#ff9a9e)}
+.k-badge.b2{background:linear-gradient(135deg,#ffd166,#ff9a3d); color:#5a3d00}
+.k-badge.b3{background:linear-gradient(135deg,#7ee8fa,#4facfe)}
+.k-badge.b4{background:linear-gradient(135deg,#b78cff,#764ba2)}
+.k-badge.b5{background:linear-gradient(135deg,#6ee7b7,#34d399); color:#064e3b}
+.k-badge.b6{background:linear-gradient(135deg,#f472b6,#ec4899)}
+.k-badge.b7{background:linear-gradient(135deg,#fb923c,#f97316)}
+.k-badge.b8{background:linear-gradient(135deg,#38bdf8,#0ea5e9)}
+.k-badge.b9{background:linear-gradient(135deg,#f87171,#ef4444)}
+.k-badge.b10{background:linear-gradient(135deg,#a3e635,#84cc16); color:#365314}
+
+/* ---------- 24字价值观 ---------- */
+.values { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+.value-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.v-label {
+  padding: 5px 12px; border-radius: 10px; font-weight: 700; font-size: 14px;
+  background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border); min-width: 50px; text-align: center;
+}
+.v-word {
+  padding: 9px 18px; border-radius: 12px; font-size: 19px; font-weight: 800;
+  background: var(--glass); border: 1px solid var(--glass-border);
+  animation: popIn 0.4s backwards;
+}
+.v-word:nth-child(2){animation-delay:.05s}.v-word:nth-child(3){animation-delay:.1s}
+.v-word:nth-child(4){animation-delay:.15s}.v-word:nth-child(5){animation-delay:.2s}
+.v-word.hot { background: linear-gradient(135deg, rgba(255,209,102,0.35), rgba(255,110,196,0.35)); }
+@keyframes popIn { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+
+/* ---------- SMART ---------- */
+.smart { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.smart-item {
+  flex: 1; min-width: 110px; padding: 18px; text-align: center; border-radius: 16px;
+  background: var(--glass); border: 1px solid var(--glass-border); font-size: 17px; font-weight: 700;
+  transition: transform 0.25s;
+}
+.smart-item b { display: block; font-size: 32px; color: var(--accent); margin-bottom: 6px; }
+.smart-item:hover { transform: translateY(-5px) rotate(-2deg); }
+
+/* ---------- 游戏通用 ---------- */
+.game { text-align: center; }
+.g-badge {
+  display: inline-block; padding: 6px 20px; border-radius: 999px; margin-bottom: 10px;
+  background: linear-gradient(135deg,#ffd166,#ff6ec4); font-weight: 800; font-size: 15px; color: #4a2a00;
+}
+.game-desc { font-size: 16px; margin-bottom: 20px; opacity: 0.92; }
+.game-status { margin-top: 18px; font-size: 19px; font-weight: 700; color: var(--accent); min-height: 28px; }
+.big-btn {
+  padding: 13px 32px; font-size: 19px; font-weight: 800; color: #fff; cursor: pointer;
+  background: linear-gradient(135deg, #ff6ec4, #ff9a3d);
+  border: none; border-radius: 999px; box-shadow: 0 8px 22px rgba(255,110,196,0.4);
+  transition: all 0.2s; margin-top: 12px;
+}
+.big-btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 14px 32px rgba(255,110,196,0.55); }
+.big-btn.alt { background: linear-gradient(135deg, #7ee8fa, #4facfe); box-shadow: 0 8px 22px rgba(79,172,254,0.4); }
+.btn-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+/* ---------- 游戏1 扣扣子 ---------- */
+.btn-box { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-width: 720px; margin: 0 auto; }
+.btn-item {
+  width: 70px; height: 70px; border-radius: 50%; font-size: 26px; font-weight: 900; cursor: pointer;
+  background: var(--glass-strong); border: 2px solid var(--glass-border); color: #fff;
+  transition: all 0.15s; box-shadow: inset 0 0 0 6px rgba(255,255,255,0.1);
+}
+.btn-item:hover { transform: scale(1.1); }
+.btn-item.done { background: linear-gradient(135deg,#6ee7b7,#34d399); border-color: #fff; color: #064e3b; animation: popIn 0.3s; }
+
+/* ---------- 答题通用 ---------- */
+.quiz-body { max-width: 760px; margin: 0 auto; text-align: left; }
+.quiz-q { padding: 14px 16px; border-radius: 14px; margin-bottom: 12px; background: var(--glass); border: 1px solid var(--glass-border); }
+.quiz-q .q-text { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.quiz-q .q-answer { font-size: 15px; color: #ffe9b3; padding: 6px 0; display: none; }
+.quiz-q.show .q-answer { display: block; animation: fadeUp 0.35s; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.opt-btn {
+  display: block; width: 100%; text-align: left; margin: 5px 0; padding: 10px 14px;
+  border-radius: 12px; font-size: 15px; cursor: pointer; color: #fff;
+  background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); transition: background 0.2s;
+}
+.opt-btn:hover { background: rgba(255,255,255,0.22); }
+.opt-btn.right { background: linear-gradient(135deg,#6ee7b7,#34d399) !important; color: #064e3b !important; font-weight: 700; }
+.opt-btn.wrong { background: linear-gradient(135deg,#f87171,#ef4444) !important; }
+.reveal-btn { padding: 7px 18px; border-radius: 999px; border: none; cursor: pointer; font-weight: 700; background: var(--glass-strong); color: #fff; }
+.quiz-score { text-align: center; font-size: 20px; font-weight: 800; margin-bottom: 12px; color: var(--accent); }
+
+/* ---------- 游戏3 连连看 ---------- */
+.match-board { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 720px; margin: 0 auto; }
+.match-col { display: flex; flex-direction: column; gap: 9px; }
+.match-item {
+  padding: 12px 15px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;
+  background: var(--glass); border: 1px solid var(--glass-border); transition: all 0.2s; color: #fff;
+}
+.match-item:hover { transform: translateX(4px); }
+.match-item.sel { background: rgba(255,209,102,0.4); border-color: var(--accent); }
+.match-item.ok { background: rgba(110,231,183,0.35); border-color: #6ee7b7; cursor: default; opacity: 0.75; }
+.match-item.wrong { animation: shake 0.4s; background: rgba(248,113,113,0.4); }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
+/* ---------- 游戏4 四象限 ---------- */
+.quad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 760px; margin: 0 auto 14px; }
+.quad-box {
+  padding: 12px; border-radius: 14px; min-height: 80px;
+  background: var(--glass); border: 2px dashed var(--glass-border); transition: all 0.2s;
+}
+.quad-box .q-title { font-weight: 800; font-size: 15px; margin-bottom: 6px; }
+.quad-box.q1 .q-title{color:#f87171}.quad-box.q2 .q-title{color:#7ee8fa}
+.quad-box.q3 .q-title{color:#ffd166}.quad-box.q4 .q-title{color:#a3e635}
+.quad-box.hover { border-color: #fff; background: rgba(255,255,255,0.22); }
+.quad-item { display: inline-block; margin: 3px; padding: 5px 11px; border-radius: 10px; background: rgba(255,255,255,0.2); font-size: 13px; font-weight: 600; }
+.quad-pool { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; max-width: 760px; margin: 0 auto; }
+.pool-item {
+  padding: 9px 15px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; color: #fff;
+  background: var(--glass-strong); border: 1px solid var(--glass-border); transition: all 0.2s;
+}
+.pool-item:hover { transform: translateY(-3px); }
+.pool-item.sel { background: rgba(255,209,102,0.5); border-color: var(--accent); }
+.pool-item.done { opacity: 0.4; pointer-events: none; }
+
+/* ---------- 游戏5 拼图 ---------- */
+.puzzle-target { display: flex; flex-direction: column; gap: 9px; margin-bottom: 18px; }
+.p-row { display: flex; align-items: center; gap: 9px; justify-content: center; flex-wrap: wrap; }
+.p-slot {
+  min-width: 64px; padding: 9px 11px; border-radius: 12px; font-size: 17px; font-weight: 800; text-align: center;
+  background: rgba(0,0,0,0.2); border: 2px dashed var(--glass-border); color: transparent;
+}
+.p-slot.filled { color: #fff; background: rgba(255,255,255,0.22); border-style: solid; animation: popIn 0.3s; }
+.p-slot.bad { animation: shake 0.4s; }
+.puzzle-tiles { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; }
+.p-tile {
+  padding: 9px 15px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; color: #fff;
+  background: var(--glass-strong); border: 1px solid var(--glass-border); transition: all 0.2s;
+}
+.p-tile:hover { transform: translateY(-3px); }
+.p-tile.used { opacity: 0.3; pointer-events: none; }
+
+/* ---------- 游戏6 翻牌 ---------- */
+.memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; max-width: 600px; margin: 0 auto; }
+.mem-card {
+  aspect-ratio: 1; border-radius: 14px; font-size: 32px; cursor: pointer; position: relative;
+  transform-style: preserve-3d; transition: transform 0.4s; display: flex; align-items: center; justify-content: center;
+  background: var(--glass-strong); border: 1px solid var(--glass-border);
+}
+.mem-card .face, .mem-card .back { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border-radius: 14px; backface-visibility: hidden; }
+.mem-card .back { background: linear-gradient(135deg, #764ba2, #667eea); transform: rotateY(180deg); font-size: 20px; }
+.mem-card.flip { transform: rotateY(180deg); }
+.mem-card.matched { border-color: #6ee7b7; box-shadow: 0 0 18px rgba(110,231,183,0.6); cursor: default; }
+
+/* ---------- 游戏7 转盘 ---------- */
+.wheel-wrap { position: relative; width: 280px; height: 280px; margin: 8px auto 20px; }
+.wheel {
+  width: 100%; height: 100%; border-radius: 50%; position: relative;
+  box-shadow: 0 0 0 8px rgba(255,255,255,0.2), 0 0 36px rgba(0,0,0,0.3);
+  transition: transform 4s cubic-bezier(0.17, 0.89, 0.32, 1.2);
+}
+.wheel-pointer { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); z-index: 2; font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); }
+.wheel-label { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5); white-space: nowrap; }
+
+/* ---------- 游戏8 你说我猜 ---------- */
+.charade-word { max-width: 500px; margin: 0 auto 16px; padding: 36px; font-size: 38px; font-weight: 900; text-align: center; }
+.charade-timer { font-size: 52px; font-weight: 900; color: var(--accent); font-variant-numeric: tabular-nums; margin-bottom: 6px; }
+.charade-timer.warn { color: #ff5c5c; animation: blink 0.8s infinite; }
+
+/* ---------- 游戏9 情景剧 ---------- */
+.roleplay-card { max-width: 540px; margin: 0 auto 16px; padding: 28px; font-size: 19px; font-weight: 600; line-height: 1.6; text-align: left; }
+
+/* ---------- 游戏12 宣誓 ---------- */
+.chain-prompt { max-width: 500px; margin: 0 auto 12px; padding: 28px; font-size: 24px; font-weight: 800; text-align: center; }
+.oath { max-width: 620px; margin: 16px auto 0; padding: 22px; background: rgba(255,209,102,0.16); border-color: rgba(255,209,102,0.45); }
+.oath h3 { color: var(--accent); margin-bottom: 10px; font-size: 21px; }
+.oath p { font-size: 18px; line-height: 1.8; font-weight: 600; }
+
+/* ---------- 封面 ---------- */
+.cover-inner { height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.cover-badge { padding: 8px 22px; border-radius: 999px; background: var(--glass-strong); border: 1px solid var(--glass-border); font-weight: 700; margin-bottom: 24px; }
+.cover-title {
+  font-size: clamp(46px, 9vw, 92px); font-weight: 900; line-height: 1.12; margin-bottom: 20px;
+  background: linear-gradient(120deg, #fff 20%, #ffd166 60%, #ff6ec4);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.cover-sub { font-size: 19px; opacity: 0.92; margin-bottom: 28px; }
+.cover-tags { display: flex; gap: 12px; margin-bottom: 36px; }
+.tag { padding: 8px 18px; border-radius: 999px; background: var(--glass); border: 1px solid var(--glass-border); font-weight: 700; font-size: 14px; }
+.cover-hint { opacity: 0.6; font-size: 14px; animation: blink 1.8s infinite; }
+
+/* ---------- 总结 ---------- */
+.end-card { padding: 30px; }
+.end-note { margin-top: 12px; font-size: 17px; font-weight: 700; color: var(--accent); }
+
+/* ---------- 底部导航（紧凑版） ---------- */
+.nav { position: relative; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 8px 14px; }
+.nav-btn {
+  padding: 8px 18px; border-radius: 12px; border: none; cursor: pointer; font-size: 15px; font-weight: 700; color: #fff;
+  background: var(--glass-strong); transition: all 0.2s; white-space: nowrap;
+}
+.nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.32); transform: translateY(-2px); }
+.nav-btn:disabled { opacity: 0.35; cursor: default; }
+.dots { flex: 1; display: flex; gap: 4px; overflow-x: auto; padding: 2px 0; }
+.dots::-webkit-scrollbar { height: 0; }
+.dot {
+  flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--glass-border); cursor: pointer;
+  background: rgba(255,255,255,0.12); color: #fff; font-size: 9px; font-weight: 700; line-height: 1;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.dot.cur { background: linear-gradient(135deg,#ffd166,#ff6ec4); transform: scale(1.2); color: #4a2a00; }
+
+/* ---------- 目录菜单 ---------- */
+.menu-overlay {
+  position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.45);
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.menu-overlay.open { display: flex; }
+.menu-panel {
+  width: min(700px, 100%); max-height: 82vh; overflow-y: auto; padding: 20px;
+  background: rgba(40,28,80,0.95);
+  border: 1px solid var(--glass-border); border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.menu-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.menu-head span { font-size: 20px; font-weight: 800; }
+.menu-close { width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer; font-size: 18px; color: #fff; background: rgba(255,255,255,0.15); }
+.menu-close:hover { background: rgba(255,255,255,0.3); }
+.menu-group { margin-bottom: 14px; }
+.menu-group-title { font-size: 14px; font-weight: 800; color: var(--accent); margin: 8px 0 8px; opacity: 0.9; }
+.menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.menu-item {
+  padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);
+  color: #fff; font-size: 14px; text-align: left; cursor: pointer; transition: all 0.15s;
+}
+.menu-item:hover { background: rgba(255,255,255,0.22); transform: translateX(3px); }
+.menu-item.cur { background: linear-gradient(135deg,#ffd166,#ff6ec4); color: #4a2a00; font-weight: 800; }
+
+/* ---------- 滚动条 ---------- */
+.slide::-webkit-scrollbar { width: 8px; }
+.slide::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 8px; }
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 900px) {
+  .grid-2, .grid-3, .match-board, .quad-grid { grid-template-columns: 1fr; }
+  .slide { padding: 16px 18px; }
+  .menu-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- 减少动画（低性能设备/易晕动用户） ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+  .blob { animation: none; }
+  .slide.active { animation: none; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- 动态玻璃背景 -->
+<div class="bg">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="blob b4"></div>
+  <div class="grain"></div>
+</div>
+
+<!-- 顶栏 -->
+<header class="topbar glass">
+  <button class="menu-btn glass-inner" id="menuBtn" title="打开目录">☰ 目录</button>
+  <div class="brand">
+    <span class="brand-badge">🧵</span>
+    <span class="brand-text">707班 · 扣好人生第一粒扣子</span>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress" id="progress"></div>
+  </div>
+  <div class="counter" id="counter">1 / 25</div>
+  <div class="timer glass-inner" id="timer">40:00</div>
+  <button class="timer-btn glass-inner" id="timerBtn" title="开始/暂停倒计时">▶</button>
+</header>
+
+<!-- 幻灯片容器 -->
+<main class="deck" id="deck">
+
+  <!-- ============ 封面 ============ -->
+  <section class="slide active" id="cover">
+    <div class="cover-inner">
+      <div class="cover-badge">铜陵市第十五中学 · 707班 主题班会</div>
+      <h1 class="cover-title">扣好人生<br>第一粒扣子</h1>
+      <p class="cover-sub">习惯 · 价值观 · 品格 —— 人生这件衣服，从第一粒扣子开始</p>
+      <div class="cover-tags">
+        <span class="tag">10 个知识点</span>
+        <span class="tag">12 个游戏</span>
+        <span class="tag">40 分钟</span>
+      </div>
+      <p class="cover-hint">按 → 或 空格键 开始</p>
+    </div>
+  </section>
+
+  <!-- ============ 导入 ============ -->
+  <section class="slide" id="intro">
+    <h2 class="slide-title">为什么是「扣扣子」？</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>💡 一个比喻</h3>
+        <p>衣服的<b>第一粒扣子扣错了</b>，后面所有的扣子都会跟着歪。</p>
+        <p>人生也一样——<b>青少年时期养成的价值观、习惯和品格</b>，就是人生的「第一粒扣子」。</p>
+        <p class="quote">「人生的扣子从一开始就要扣好。」</p>
+      </div>
+      <div class="card glass-card">
+        <h3>🎯 今天我们做三件事</h3>
+        <ul class="checklist">
+          <li>📚 <b>学点知识</b> —— 10 颗「人生扣子」</li>
+          <li>🎮 <b>玩点游戏</b> —— 12 个互动挑战</li>
+          <li>🙋 <b>立个 flag</b> —— 扣好我的第一粒扣子</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card glass-card tip-card">
+      <span class="tip-icon">🤔</span>
+      <p><b>互动提问：</b>今天早上，有没有同学把衣服扣子扣错过？（请举手分享「扣错后发生了什么」）</p>
+    </div>
+  </section>
+
+  <!-- ============ 第一扣 好习惯 ============ -->
+  <section class="slide" id="k1">
+    <div class="k-badge b1">第 1 扣</div>
+    <h2 class="slide-title">好习惯 —— 一生的财富</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>📅 21 天法则</h3>
+        <p>养成一个好习惯，一般需要 <b>21 天</b>；巩固固化，需要 <b>90 天</b>。</p>
+        <p>所以：<b>今天立 flag，明天就放弃</b>，那不叫坚持，叫「扣子还没扣上就先掉了」。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>✅ 好习惯清单</h3>
+        <ul class="chips">
+          <li>早睡早起</li><li>课前预习</li><li>坚持阅读</li>
+          <li>整理书桌</li><li>运动锻炼</li><li>诚实守信</li>
+          <li>主动问好</li><li>节约水电</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">播下一个行动，收获一种习惯；播下一种习惯，收获一种性格；播下一种性格，收获一种命运。—— 培根</p>
+    </div>
+  </section>
+
+  <!-- ============ 第二扣 核心价值观 ============ -->
+  <section class="slide" id="k2">
+    <div class="k-badge b2">第 2 扣</div>
+    <h2 class="slide-title">社会主义核心价值观 —— 24 字</h2>
+    <div class="values">
+      <div class="value-row"><span class="v-label">国家</span><span class="v-word">富强</span><span class="v-word">民主</span><span class="v-word">文明</span><span class="v-word">和谐</span></div>
+      <div class="value-row"><span class="v-label">社会</span><span class="v-word">自由</span><span class="v-word">平等</span><span class="v-word">公正</span><span class="v-word">法治</span></div>
+      <div class="value-row"><span class="v-label">个人</span><span class="v-word hot">爱国</span><span class="v-word hot">敬业</span><span class="v-word hot">诚信</span><span class="v-word hot">友善</span></div>
+    </div>
+    <div class="card glass-card tip-card">
+      <p><b>顺口溜记忆：</b>国家强、社会平、个人信。</p>
+      <p><b>中学生怎么做：</b>爱国（升国旗不交头接耳）、敬业（好好写作业）、诚信（考试不作弊）、友善（帮助同学）。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第三扣 时间管理 ============ -->
+  <section class="slide" id="k3">
+    <div class="k-badge b3">第 3 扣</div>
+    <h2 class="slide-title">时间管理 —— 挤一挤总会有</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>⏱️ 番茄工作法</h3>
+        <p><b>25 分钟</b>专注学习 + <b>5 分钟</b>休息，循环进行。</p>
+        <p>脑子像手机，一直用会发烫，需要「充个电」。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>🧩 碎片时间</h3>
+        <p>课间 10 分钟背 <b>2 个单词</b>，一天好几个课间，一年就是……（你自己算，反正很多！）</p>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">时间就像海绵里的水，只要愿挤，总还是有的。—— 鲁迅</p>
+    </div>
+  </section>
+
+  <!-- ============ 第四扣 目标管理 ============ -->
+  <section class="slide" id="k4">
+    <div class="k-badge b4">第 4 扣</div>
+    <h2 class="slide-title">目标管理 —— SMART 原则</h2>
+    <div class="smart">
+      <div class="smart-item"><b>S</b>具体</div>
+      <div class="smart-item"><b>M</b>可衡量</div>
+      <div class="smart-item"><b>A</b>能做到</div>
+      <div class="smart-item"><b>R</b>相关</div>
+      <div class="smart-item"><b>T</b>有时限</div>
+    </div>
+    <div class="card glass-card tip-card">
+      <p>❌ 「我要考第一」—— 这是<b>梦想</b>，不是目标。</p>
+      <p>✅ 「每天多做 3 道题，月考前进 5 名」—— 这才是<b>目标</b>。</p>
+      <p>把大象装进冰箱要分三步；把目标装进脑子，也要<b>拆成小步</b>。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第五扣 诚信 ============ -->
+  <section class="slide" id="k5">
+    <div class="k-badge b5">第 5 扣</div>
+    <h2 class="slide-title">诚信 —— 立身之本</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>🐺 狼来了</h3>
+        <p>放羊娃为什么最后没人信了？——因为他把「诚信」这粒扣子，当成<b>纽扣电池</b>，随手就扔了。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>📜 诚信清单</h3>
+        <ul class="checklist">
+          <li>考试不作弊、作业不抄袭</li>
+          <li>说到做到，不撒谎</li>
+          <li>借了橡皮记得还</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">人无信不立。—— 孔子</p>
+    </div>
+  </section>
+
+  <!-- ============ 第六扣 责任 ============ -->
+  <section class="slide" id="k6">
+    <div class="k-badge b6">第 6 扣</div>
+    <h2 class="slide-title">责任 —— 对自己、对他人负责</h2>
+    <div class="grid-3">
+      <div class="card glass-card">
+        <h3>🙋 对自己</h3>
+        <p>好好学习、锻炼身体、按时完成作业，不当「拖延症晚期患者」。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>🏠 对家庭</h3>
+        <p>帮妈妈刷个碗、体谅父母，别把「我在打游戏」挂在嘴边。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>🏫 对班级</h3>
+        <p>值日认真做、维护集体荣誉，别让流动红旗「流」到隔壁班。</p>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">天下兴亡，匹夫有责。咱们班兴亡，人人有责。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第七扣 感恩 ============ -->
+  <section class="slide" id="k7">
+    <div class="k-badge b7">第 7 扣</div>
+    <h2 class="slide-title">感恩 —— 常怀感恩之心</h2>
+    <div class="grid-3">
+      <div class="card glass-card"><h3>👨‍👩‍👧 父母</h3><p>赚钱供你上学，比上班还累，多说一句「谢谢爸妈」。</p></div>
+      <div class="card glass-card"><h3>👩‍🏫 老师</h3><p>批作业批到怀疑人生，还坚持给你讲题。</p></div>
+      <div class="card glass-card"><h3>🤝 同学</h3><p>借你橡皮、帮你讲题、考试不举报你（开玩笑）。</p></div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">滴水之恩，当涌泉相报。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第八扣 自律 ============ -->
+  <section class="slide" id="k8">
+    <div class="k-badge b8">第 8 扣</div>
+    <h2 class="slide-title">自律 —— 先做该做的，再做想做的</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>📱 手机管理</h3>
+        <p>手机是「第一粒扣子」的<b>最大敌人</b>！晚上躺被窝刷手机，刷着刷着天亮了，第二天上课打瞌睡，还怪老师讲课像催眠曲。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>🏆 自律者自由</h3>
+        <ul class="checklist">
+          <li>定时使用手机，限时游戏</li>
+          <li>手机放客厅充电，睡个好觉</li>
+          <li>先写作业，再放松</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">自律的程度，决定你人生的高度。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第九扣 安全 ============ -->
+  <section class="slide" id="k9">
+    <div class="k-badge b9">第 9 扣</div>
+    <h2 class="slide-title">安全 —— 这根扣子松了，全白搭</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>🚗 交通安全</h3>
+        <ul class="checklist"><li>红灯停、绿灯行</li><li>骑电动车戴头盔</li><li>不闯红灯、不并排骑行</li></ul>
+      </div>
+      <div class="card glass-card">
+        <h3>🌊 防溺水 & 网络</h3>
+        <ul class="checklist"><li>不私自下水游泳</li><li>不泄露个人信息</li><li>不轻信陌生网友</li><li>拒绝校园欺凌</li></ul>
+      </div>
+    </div>
+    <div class="card glass-card tip-card">
+      <p>⚠️ <b>记住：</b>安全这根扣子松了，其它扣子扣得再整齐也没用。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第十扣 礼仪 ============ -->
+  <section class="slide" id="k10">
+    <div class="k-badge b10">第 10 扣</div>
+    <h2 class="slide-title">礼仪 —— 文明的「Wi-Fi」</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>🗣️ 文明用语</h3>
+        <ul class="chips"><li>请</li><li>谢谢</li><li>对不起</li><li>没关系</li></ul>
+      </div>
+      <div class="card glass-card">
+        <h3>🏫 校园礼仪</h3>
+        <ul class="checklist"><li>见老师主动问好</li><li>同学之间不取外号</li><li>排队不插队</li><li>公共场所轻声</li></ul>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">文明的人走到哪儿都受欢迎——就像 Wi-Fi，大家都想连。</p>
+    </div>
+  </section>
+
+  <!-- ============ 游戏1 扣扣子大作战 ============ -->
+  <section class="slide game" id="g1">
+    <div class="g-badge">🎮 游戏 1</div>
+    <h2 class="slide-title">扣扣子大作战</h2>
+    <p class="game-desc">把 12 颗扣子全部「扣好」，比谁速度快！</p>
+    <div class="btn-box" id="btnBox"></div>
+    <p class="game-status" id="btnStatus">点击扣子，开始！</p>
+  </section>
+
+  <!-- ============ 游戏2 知识抢答 ============ -->
+  <section class="slide game" id="g2">
+    <div class="g-badge">🎮 游戏 2</div>
+    <h2 class="slide-title">知识抢答</h2>
+    <p class="game-desc">看题目，比谁答得快！（点「揭晓答案」）</p>
+    <div class="quiz-body" id="buzzBody"></div>
+  </section>
+
+  <!-- ============ 游戏3 连连看 ============ -->
+  <section class="slide game" id="g3">
+    <div class="g-badge">🎮 游戏 3</div>
+    <h2 class="slide-title">好习惯连连看</h2>
+    <p class="game-desc">先点左边「习惯」，再点右边「好处」，连成一对。</p>
+    <div class="match-board" id="matchBoard"></div>
+    <p class="game-status" id="matchMsg">开始配对！</p>
+  </section>
+
+  <!-- ============ 游戏4 时间四象限 ============ -->
+  <section class="slide game" id="g4">
+    <div class="g-badge">🎮 游戏 4</div>
+    <h2 class="slide-title">时间四象限</h2>
+    <p class="game-desc">点选下面任务，再点它所属的象限，把它送回家。</p>
+    <div class="quad-grid" id="quadGrid"></div>
+    <div class="quad-pool" id="quadPool"></div>
+    <p class="game-status" id="quadMsg">得分：0 / 0</p>
+  </section>
+
+  <!-- ============ 游戏5 价值观拼图 ============ -->
+  <section class="slide game" id="g5">
+    <div class="g-badge">🎮 游戏 5</div>
+    <h2 class="slide-title">价值观拼图</h2>
+    <p class="game-desc">按「国家 → 社会 → 个人」顺序，点出正确的 24 字。</p>
+    <div class="puzzle-target" id="puzzleTarget"></div>
+    <div class="puzzle-tiles" id="puzzleTiles"></div>
+    <p class="game-status" id="puzzleMsg">从下面选词填入上方！</p>
+  </section>
+
+  <!-- ============ 游戏6 记忆翻牌 ============ -->
+  <section class="slide game" id="g6">
+    <div class="g-badge">🎮 游戏 6</div>
+    <h2 class="slide-title">好习惯记忆翻牌</h2>
+    <p class="game-desc">翻到两张相同的好习惯，全部配对成功！</p>
+    <div class="memory-grid" id="memoryGrid"></div>
+    <p class="game-status" id="memoryMsg">翻开卡片，寻找相同的好习惯。</p>
+  </section>
+
+  <!-- ============ 游戏7 大转盘 ============ -->
+  <section class="slide game" id="g7">
+    <div class="g-badge">🎮 游戏 7</div>
+    <h2 class="slide-title">幸运大转盘</h2>
+    <p class="game-desc">转一下，命运交给转盘！</p>
+    <div class="wheel-wrap" id="wheelWrap">
+      <div class="wheel-pointer"></div>
+      <div class="wheel" id="wheel"></div>
+    </div>
+    <button class="big-btn" id="wheelSpin">🎡 转动转盘</button>
+    <p class="game-status" id="wheelResult">点击按钮开始！</p>
+  </section>
+
+  <!-- ============ 游戏8 你说我猜 ============ -->
+  <section class="slide game" id="g8">
+    <div class="g-badge">🎮 游戏 8</div>
+    <h2 class="slide-title">你说我猜</h2>
+    <p class="game-desc">一人描述（不能说词里的字），一人猜，30 秒！</p>
+    <div class="charade-word glass-card" id="charadeWord">点击下方按钮抽词</div>
+    <div class="charade-timer" id="charadeTimer">30</div>
+    <div class="btn-row">
+      <button class="big-btn" id="charadeBtn">🎲 抽一个词</button>
+      <button class="big-btn alt" id="charadeGo">⏱️ 开始 30 秒</button>
+    </div>
+  </section>
+
+  <!-- ============ 游戏9 情景剧 ============ -->
+  <section class="slide game" id="g9">
+    <div class="g-badge">🎮 游戏 9</div>
+    <h2 class="slide-title">情景剧表演</h2>
+    <p class="game-desc">抽一个情景，分角色演出来，看谁演技在线！</p>
+    <div class="roleplay-card glass-card" id="roleplayCard">点击下方按钮抽场景</div>
+    <button class="big-btn" id="roleplayBtn">🎭 抽一个情景</button>
+  </section>
+
+  <!-- ============ 游戏10 判断题闯关 ============ -->
+  <section class="slide game" id="g10">
+    <div class="g-badge">🎮 游戏 10</div>
+    <h2 class="slide-title">判断题闯关</h2>
+    <p class="game-desc">判断对错，看看你能对几题！</p>
+    <div class="quiz-body" id="tfBody"></div>
+  </section>
+
+  <!-- ============ 游戏11 选择题擂台 ============ -->
+  <section class="slide game" id="g11">
+    <div class="g-badge">🎮 游戏 11</div>
+    <h2 class="slide-title">选择题擂台</h2>
+    <p class="game-desc">四个选项，选出唯一正确答案！</p>
+    <div class="quiz-body" id="mcqBody"></div>
+  </section>
+
+  <!-- ============ 游戏12 宣誓接龙 ============ -->
+  <section class="slide game" id="g12">
+    <div class="g-badge">🎮 游戏 12</div>
+    <h2 class="slide-title">习惯接龙 & 宣誓</h2>
+    <p class="game-desc">随机抽一个好习惯，全班一起接龙；最后齐读宣誓词。</p>
+    <div class="chain-prompt glass-card" id="chainPrompt">点击按钮，抽一个「今日好习惯」</div>
+    <button class="big-btn" id="chainBtn">🎲 抽一个好习惯</button>
+    <div class="oath glass-card">
+      <h3>🙋 全班宣誓</h3>
+      <p id="oathText">我宣誓：从今天起，扣好人生第一粒扣子——养成好习惯，践行价值观，珍惜时间，诚实守信，心怀感恩，自律自强，做新时代好少年！</p>
+    </div>
+  </section>
+
+  <!-- ============ 总结 ============ -->
+  <section class="slide" id="summary">
+    <h2 class="slide-title">总结 · 扣好第一粒扣子</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>🔑 记住三句话</h3>
+        <ul class="checklist big">
+          <li>习惯决定性格，性格决定命运</li>
+          <li>先做该做的，再做想做的</li>
+          <li>人生的扣子，从第一粒就要扣好</li>
+        </ul>
+      </div>
+      <div class="card glass-card">
+        <h3>✊ 今天立个 flag</h3>
+        <p>选一个你能做到的小行动，坚持 21 天：</p>
+        <ul class="chips">
+          <li>每天早睡 10 分钟</li>
+          <li>每天阅读 20 分钟</li>
+          <li>每天整理书桌</li>
+          <li>每天说一句「谢谢」</li>
+          <li>每天运动 15 分钟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card glass-card quote-card end-card">
+      <p class="quote big-q">愿每一位同学，都扣好人生的第一粒扣子，<br>走好青春每一步！</p>
+      <p class="end-note">🎉 班会结束，谢谢大家！</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- 底部导航 -->
+<footer class="nav glass">
+  <button class="nav-btn" id="prev">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="next">下一页 →</button>
+</footer>
+
+<!-- 目录菜单 -->
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-panel">
+    <div class="menu-head">
+      <span>📋 课件目录</span>
+      <button class="menu-close" id="menuClose">✕</button>
+    </div>
+    <div id="menuList"></div>
+  </div>
+</div>
+
+<script>
+/* ============ 扣好人生第一粒扣子 · 课件逻辑 ============ */
+
+/* ---------- 1. 翻页导航 ---------- */
+const slides = Array.from(document.querySelectorAll('.slide'));
+let cur = 0;
+
+const progressEl = document.getElementById('progress');
+const counterEl = document.getElementById('counter');
+const dotsEl = document.getElementById('dots');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+
+function renderNav() {
+  progressEl.style.width = ((cur + 1) / slides.length * 100) + '%';
+  counterEl.textContent = (cur + 1) + ' / ' + slides.length;
+  slides.forEach((s, i) => s.classList.toggle('active', i === cur));
+  prevBtn.disabled = cur === 0;
+  nextBtn.disabled = cur === slides.length - 1;
+  Array.from(dotsEl.children).forEach((d, i) => d.classList.toggle('cur', i === cur));
+  if (window.__menuItems) window.__menuItems.forEach((m, i) => m.classList.toggle('cur', i === cur));
+}
+
+function go(i) {
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  renderNav();
+}
+function next() { go(cur + 1); }
+function prev() { go(cur - 1); }
+
+nextBtn.addEventListener('click', next);
+prevBtn.addEventListener('click', prev);
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+  else if (e.key === 'Home') go(0);
+  else if (e.key === 'End') go(slides.length - 1);
+});
+
+// 底部圆点导航
+slides.forEach((s, i) => {
+  const d = document.createElement('button');
+  d.className = 'dot';
+  d.textContent = i + 1;
+  d.title = s.querySelector('h2') ? s.querySelector('h2').textContent : '第 ' + (i + 1) + ' 页';
+  d.addEventListener('click', () => go(i));
+  dotsEl.appendChild(d);
+});
+
+/* ---------- 1.5 目录菜单 ---------- */
+const menuBtn = document.getElementById('menuBtn');
+const menuOverlay = document.getElementById('menuOverlay');
+const menuClose = document.getElementById('menuClose');
+const menuList = document.getElementById('menuList');
+
+const menuGroups = [
+  { title: '🚀 开场', labels: ['封面', '导入 · 为什么是扣扣子'] },
+  { title: '📚 知识点 · 十颗扣子', labels: ['第1扣 好习惯', '第2扣 核心价值观', '第3扣 时间管理', '第4扣 目标管理', '第5扣 诚信', '第6扣 责任', '第7扣 感恩', '第8扣 自律', '第9扣 安全', '第10扣 礼仪'] },
+  { title: '🎮 游戏 · 12个', labels: ['游戏1 扣扣子大作战', '游戏2 知识抢答', '游戏3 好习惯连连看', '游戏4 时间四象限', '游戏5 价值观拼图', '游戏6 记忆翻牌', '游戏7 幸运大转盘', '游戏8 你说我猜', '游戏9 情景剧表演', '游戏10 判断题闯关', '游戏11 选择题擂台', '游戏12 宣誓接龙'] },
+  { title: '🎯 结尾', labels: ['总结 · 立flag · 宣誓'] },
+];
+
+let menuIdx = 0;
+menuGroups.forEach(g => {
+  const group = document.createElement('div');
+  group.className = 'menu-group';
+  const t = document.createElement('div');
+  t.className = 'menu-group-title';
+  t.textContent = g.title;
+  group.appendChild(t);
+  const grid = document.createElement('div');
+  grid.className = 'menu-grid';
+  g.labels.forEach(label => {
+    const item = document.createElement('button');
+    item.className = 'menu-item';
+    item.textContent = label;
+    const idx = menuIdx++;
+    item.addEventListener('click', () => { go(idx); closeMenu(); });
+    grid.appendChild(item);
+  });
+  group.appendChild(grid);
+  menuList.appendChild(group);
+});
+window.__menuItems = Array.from(menuList.querySelectorAll('.menu-item'));
+
+function openMenu() { menuOverlay.classList.add('open'); }
+function closeMenu() { menuOverlay.classList.remove('open'); }
+menuBtn.addEventListener('click', openMenu);
+menuClose.addEventListener('click', closeMenu);
+menuOverlay.addEventListener('click', (e) => { if (e.target === menuOverlay) closeMenu(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+
+/* ---------- 2. 40 分钟倒计时 ---------- */
+const timerEl = document.getElementById('timer');
+const timerBtn = document.getElementById('timerBtn');
+let total = 40 * 60;
+let left = total;
+let timerInt = null;
+let running = false;
+
+function fmt(s) {
+  const m = Math.floor(s / 60), ss = s % 60;
+  return String(m).padStart(2, '0') + ':' + String(ss).padStart(2, '0');
+}
+function tick() {
+  left--;
+  if (left <= 0) { left = 0; stopTimer(); }
+  timerEl.textContent = fmt(left);
+  if (left <= 300) timerEl.classList.add('warn');
+  else timerEl.classList.remove('warn');
+}
+function startTimer() {
+  if (running || left <= 0) return;
+  running = true; timerBtn.textContent = '⏸';
+  timerInt = setInterval(tick, 1000);
+}
+function stopTimer() {
+  running = false; clearInterval(timerInt); timerBtn.textContent = '▶';
+}
+function resetTimer() {
+  stopTimer(); left = total; timerEl.textContent = fmt(left); timerEl.classList.remove('warn');
+}
+timerBtn.addEventListener('click', () => running ? stopTimer() : startTimer());
+timerBtn.addEventListener('dblclick', resetTimer);
+
+/* ---------- 3. 游戏数据 ---------- */
+
+// 抢答（游戏2）
+const buzzData = [
+  { q: '24 字核心价值观里，「诚信」属于哪个层面？', a: '个人层面' },
+  { q: '养成一个好习惯一般需要多少天？', a: '21 天' },
+  { q: '番茄工作法的专注时间是多久？', a: '25 分钟' },
+  { q: '「人无信不立」是古代哪位名人说的？', a: '孔子' },
+  { q: '「第一粒扣子」比喻的是什么？', a: '青少年时期养成的价值观、习惯和品格' },
+  { q: '时间四象限里，「制定复习计划」属于哪一类？', a: '重要但不紧急' },
+  { q: '「播下一个行动，收获一种习惯」这句话是谁说的？', a: '培根' },
+  { q: '说出一句常用的文明用语。', a: '请 / 谢谢 / 对不起 / 没关系（任一）' },
+];
+
+// 判断题（游戏10）
+const tfData = [
+  { q: '第一粒扣子扣错了，后面的扣子也会跟着错。', a: true },
+  { q: '好习惯只需要一天就能养成。', a: false, why: '养成一个好习惯一般需要 21 天。' },
+  { q: '社会主义核心价值观一共有 12 个词、24 个字。', a: true },
+  { q: '遇到不会的题，抄同学的作业是聪明的做法。', a: false, why: '抄袭是不诚信的表现，应该独立思考或请教老师。' },
+  { q: '上课前把手机交给老师保管，是自律的表现。', a: true },
+  { q: '时间四象限中，重要且紧急的事情应该最后再做。', a: false, why: '重要且紧急的事应该优先处理。' },
+  { q: '诚信就是说到做到、不撒谎。', a: true },
+  { q: '只要学习好，其他方面都不重要。', a: false, why: '德智体美劳要全面发展，品格比分数更重要。' },
+  { q: '每天阅读 20 分钟是一个好习惯。', a: true },
+  { q: '遇到挫折就放弃，是坚强的表现。', a: false, why: '面对挫折不放弃、迎难而上才是坚强。' },
+];
+
+// 选择题（游戏11）
+const mcqData = [
+  { q: '「扣好人生第一粒扣子」强调的是什么时期？', opts: ['A. 老年', 'B. 青少年', 'C. 中年', 'D. 幼儿'], a: 1 },
+  { q: '养成一个好习惯一般需要多少天？', opts: ['A. 1 天', 'B. 7 天', 'C. 21 天', 'D. 100 天'], a: 2 },
+  { q: '下列哪个不属于社会主义核心价值观「个人层面」？', opts: ['A. 爱国', 'B. 敬业', 'C. 自由', 'D. 诚信'], a: 2, why: '自由属于社会层面。' },
+  { q: '下列哪个是好习惯？', opts: ['A. 熬夜刷手机', 'B. 课前预习', 'C. 抄作业', 'D. 乱扔垃圾'], a: 1 },
+  { q: '番茄工作法的专注时间一般是多久？', opts: ['A. 15 分钟', 'B. 25 分钟', 'C. 50 分钟', 'D. 2 小时'], a: 1 },
+  { q: 'SMART 原则中的 S 代表什么？', opts: ['A. 具体 Specific', 'B. 时间 Time', 'C. 成功 Success', 'D. 速度 Speed'], a: 0 },
+  { q: '下列哪个属于「重要但不紧急」的事？', opts: ['A. 明天要交的作业', 'B. 锻炼身体', 'C. 刷短视频', 'D. 接推销电话'], a: 1 },
+  { q: '「诚信」的反义词是？', opts: ['A. 善良', 'B. 欺骗', 'C. 勇敢', 'D. 勤劳'], a: 1 },
+  { q: '发现同学有困难，我们应该？', opts: ['A. 嘲笑', 'B. 视而不见', 'C. 主动帮助', 'D. 躲开'], a: 2 },
+  { q: '合理使用手机，应该？', opts: ['A. 通宵玩游戏', 'B. 定时限时使用', 'C. 上课偷偷玩', 'D. 走路看手机'], a: 1 },
+];
+
+// 你说我猜（游戏8）
+const charadeWords = [
+  '早睡早起', '诚信', '自律', '感恩', '坚持', '文明', '节约用水',
+  '专注', '责任', '勤奋', '友善', '时间管理', '礼貌', '晨跑', '读书',
+];
+
+// 情景剧（游戏9）
+const roleplayScenes = [
+  '同桌考试时想抄你的答案，你会怎么做？请 3 人分角色演出来。',
+  '你在操场捡到一个钱包，里面有 100 元，你会怎么做？',
+  '同学在背后说老师的坏话，你刚好路过听到了。',
+  '妈妈辛苦做了一桌饭，你却只顾着打游戏，请演出妈妈的辛苦和你的改变。',
+  '好朋友约你逃课去网吧，你怎么办？',
+  '有人把垃圾随手扔在地上，你上前提醒，对方态度不好。',
+];
+
+// 习惯接龙（游戏12）
+const chainHabits = [
+  '今天回家，主动跟爸爸妈妈说一句「辛苦了」',
+  '今天睡前，把手机放到客厅充电，早睡 10 分钟',
+  '今天课间，主动向 3 位同学问好',
+  '今天放学前，把书桌和抽屉整理干净',
+  '今天阅读课外书 20 分钟',
+  '今天做一件帮助同学的小事',
+  '今天节约用水，洗完手关紧水龙头',
+  '今天见到老师，主动问声好',
+];
+
+/* ---------- 4. 游戏1：扣扣子大作战 ---------- */
+function initButtonGame() {
+  const box = document.getElementById('btnBox');
+  const status = document.getElementById('btnStatus');
+  box.innerHTML = '';
+  let startT = null;
+  const btns = [];
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement('button');
+    b.className = 'btn-item';
+    b.textContent = '○';
+    b.done = false;
+    b.addEventListener('click', () => {
+      if (!startT) startT = Date.now();
+      if (b.done) return;
+      b.done = true;
+      b.classList.add('done');
+      b.textContent = '✔';
+      const leftCnt = btns.filter(x => !x.done).length;
+      if (leftCnt === 0) {
+        const t = ((Date.now() - startT) / 1000).toFixed(1);
+        status.innerHTML = '🎉 全部扣好！用时 <b>' + t + '</b> 秒，再来一局？';
+      } else {
+        status.textContent = '加油！还剩 ' + leftCnt + ' 颗扣子';
+      }
+    });
+    btns.push(b);
+    box.appendChild(b);
+  }
+  status.textContent = '点击扣子，全部扣好，比谁快！';
+}
+
+/* ---------- 5. 答题引擎（抢答/判断/选择） ---------- */
+function renderQuiz(bodyId, data, mode) {
+  const body = document.getElementById(bodyId);
+  body.innerHTML = '';
+  let score = 0, answered = 0;
+
+  const scoreEl = document.createElement('div');
+  scoreEl.className = 'quiz-score';
+  scoreEl.textContent = mode === 'buzz' ? '' : ('得分：0 / ' + data.length);
+  if (mode !== 'buzz') body.appendChild(scoreEl);
+
+  data.forEach((item, idx) => {
+    const box = document.createElement('div');
+    box.className = 'quiz-q';
+    box.innerHTML = '<div class="q-text">' + (idx + 1) + '. ' + item.q + '</div>';
+    const ans = document.createElement('div');
+    ans.className = 'q-answer';
+    box.appendChild(ans);
+
+    if (mode === 'buzz') {
+      const btn = document.createElement('button');
+      btn.className = 'reveal-btn';
+      btn.textContent = '💡 揭晓答案';
+      btn.addEventListener('click', () => {
+        ans.textContent = '✔ 答案：' + item.a;
+        box.classList.add('show');
+      });
+      box.appendChild(btn);
+    } else if (mode === 'tf') {
+      const row = document.createElement('div');
+      ['对 ✔', '错 ✘'].forEach((t, i) => {
+        const b = document.createElement('button');
+        b.className = 'opt-btn';
+        b.textContent = t;
+        b.addEventListener('click', () => {
+          if (box.dataset.done) return;
+          box.dataset.done = '1';
+          const correct = (item.a === true && i === 0) || (item.a === false && i === 1);
+          if (correct) { b.classList.add('right'); score++; }
+          else { b.classList.add('wrong'); }
+          ans.textContent = (correct ? '✅ 答对！' : '❌ 答错！') + (item.why ? ' ' + item.why : '');
+          answered++;
+          box.classList.add('show');
+          scoreEl.textContent = '得分：' + score + ' / ' + data.length + (answered === data.length ? '  🎉 完成！' : '');
+        });
+        row.appendChild(b);
+      });
+      box.appendChild(row);
+    } else if (mode === 'mcq') {
+      item.opts.forEach((opt, oi) => {
+        const b = document.createElement('button');
+        b.className = 'opt-btn';
+        b.textContent = opt;
+        b.addEventListener('click', () => {
+          if (box.dataset.done) return;
+          box.dataset.done = '1';
+          if (oi === item.a) { b.classList.add('right'); score++; }
+          else { b.classList.add('wrong'); box.querySelectorAll('.opt-btn')[item.a].classList.add('right'); }
+          ans.textContent = (oi === item.a ? '✅ 答对！' : '❌ 正确答案是 ' + item.opts[item.a]) + (item.why ? '（' + item.why + '）' : '');
+          answered++;
+          box.classList.add('show');
+          scoreEl.textContent = '得分：' + score + ' / ' + data.length + (answered === data.length ? '  🎉 完成！' : '');
+        });
+        box.appendChild(b);
+      });
+    }
+    body.appendChild(box);
+  });
+}
+
+/* ---------- 6. 游戏3：好习惯连连看 ---------- */
+const matchPairs = [
+  ['早睡早起', '精力充沛'],
+  ['课前预习', '上课高效'],
+  ['坚持运动', '身体强壮'],
+  ['主动问好', '文明有礼'],
+  ['诚实守信', '值得信任'],
+  ['整理书桌', '做事高效'],
+];
+function initMatchGame() {
+  const board = document.getElementById('matchBoard');
+  const msg = document.getElementById('matchMsg');
+  board.innerHTML = '';
+  const leftCol = document.createElement('div');
+  const rightCol = document.createElement('div');
+  leftCol.className = 'match-col';
+  rightCol.className = 'match-col';
+
+  const leftItems = matchPairs.map(p => p[0]);
+  const rightItems = matchPairs.map(p => p[1]).sort(() => Math.random() - 0.5);
+  let sel = null;
+  let done = 0;
+
+  leftItems.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'match-item';
+    el.textContent = t;
+    el.addEventListener('click', () => {
+      if (el.classList.contains('ok')) return;
+      leftCol.querySelectorAll('.sel').forEach(x => x.classList.remove('sel'));
+      el.classList.add('sel');
+      sel = el;
+    });
+    leftCol.appendChild(el);
+  });
+
+  rightItems.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'match-item';
+    el.textContent = t;
+    el.addEventListener('click', () => {
+      if (el.classList.contains('ok')) return;
+      if (!sel) { msg.textContent = '请先点击左边的一个「习惯」'; return; }
+      const leftText = sel.textContent;
+      const pair = matchPairs.find(p => p[0] === leftText);
+      if (pair && pair[1] === t) {
+        sel.classList.add('ok'); el.classList.add('ok');
+        sel.classList.remove('sel'); sel = null;
+        done++;
+        msg.textContent = '✅ 配对成功！已完成 ' + done + ' / ' + matchPairs.length;
+        if (done === matchPairs.length) msg.innerHTML = '🎉 全部配对完成，好习惯满分！';
+      } else {
+        el.classList.add('wrong');
+        msg.textContent = '❌ 配错了，再想想！';
+        setTimeout(() => el.classList.remove('wrong'), 450);
+      }
+    });
+    rightCol.appendChild(el);
+  });
+
+  board.appendChild(leftCol);
+  board.appendChild(rightCol);
+  msg.textContent = '开始配对！';
+}
+
+/* ---------- 7. 游戏4：时间四象限 ---------- */
+const quadrants = [
+  { key: 'q1', title: '① 重要且紧急', tip: '立刻做', color: 'q1' },
+  { key: 'q2', title: '② 重要不紧急', tip: '计划做', color: 'q2' },
+  { key: 'q3', title: '③ 紧急不重要', tip: '可以拒绝/委托', color: 'q3' },
+  { key: 'q4', title: '④ 不紧急不重要', tip: '少做', color: 'q4' },
+];
+const quadTasks = [
+  { t: '明天要交的作文', a: 'q1' },
+  { t: '下周期中考试，制定复习计划', a: 'q2' },
+  { t: '推销电话突然打来', a: 'q3' },
+  { t: '通宵刷短视频', a: 'q4' },
+  { t: '每天坚持晨跑', a: 'q2' },
+  { t: '老师突然找你去办公室', a: 'q1' },
+  { t: '玩游戏打发时间', a: 'q4' },
+  { t: '帮同学搬东西', a: 'q3' },
+];
+function initQuadrantGame() {
+  const grid = document.getElementById('quadGrid');
+  const pool = document.getElementById('quadPool');
+  const msg = document.getElementById('quadMsg');
+  grid.innerHTML = '';
+  pool.innerHTML = '';
+
+  const boxes = {};
+  quadrants.forEach(q => {
+    const box = document.createElement('div');
+    box.className = 'quad-box ' + q.color;
+    box.dataset.key = q.key;
+    box.innerHTML = '<div class="q-title">' + q.title + '</div><div class="q-items"></div>';
+    boxes[q.key] = box;
+    grid.appendChild(box);
+  });
+
+  let sel = null, score = 0, total = quadTasks.length;
+  quadTasks.forEach(task => {
+    const el = document.createElement('div');
+    el.className = 'pool-item';
+    el.textContent = task.t;
+    el.addEventListener('click', () => {
+      if (el.classList.contains('done')) return;
+      pool.querySelectorAll('.sel').forEach(x => x.classList.remove('sel'));
+      el.classList.add('sel');
+      sel = { el, task };
+    });
+    pool.appendChild(el);
+  });
+
+  Object.values(boxes).forEach(box => {
+    box.addEventListener('click', () => {
+      if (!sel) { msg.textContent = '请先选择下面的一个任务'; return; }
+      const { el, task } = sel;
+      const correct = box.dataset.key === task.a;
+      if (correct) {
+        el.classList.add('done'); el.classList.remove('sel');
+        const chip = document.createElement('span');
+        chip.className = 'quad-item';
+        chip.textContent = task.t;
+        box.querySelector('.q-items').appendChild(chip);
+        score++;
+      } else {
+        box.classList.add('hover');
+        setTimeout(() => box.classList.remove('hover'), 400);
+      }
+      sel = null;
+      msg.innerHTML = '得分：' + score + ' / ' + total + (score === total ? ' 🎉 时间管理大师！' : (correct ? ' ✅ 正确！' : ' ❌ 再想想它该放哪？'));
+    });
+  });
+
+  msg.textContent = '得分：0 / ' + total;
+}
+
+/* ---------- 8. 游戏5：价值观拼图 ---------- */
+const puzzleWords = ['富强', '民主', '文明', '和谐', '自由', '平等', '公正', '法治', '爱国', '敬业', '诚信', '友善'];
+function initPuzzleGame() {
+  const target = document.getElementById('puzzleTarget');
+  const tiles = document.getElementById('puzzleTiles');
+  const msg = document.getElementById('puzzleMsg');
+  target.innerHTML = '';
+  tiles.innerHTML = '';
+  let step = 0;
+
+  const rows = [[], [], []];
+  [['国家'], ['社会'], ['个人']].forEach((label, ri) => {
+    const row = document.createElement('div');
+    row.className = 'p-row';
+    const lab = document.createElement('span');
+    lab.className = 'v-label';
+    lab.textContent = label[0];
+    row.appendChild(lab);
+    for (let i = 0; i < 4; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'p-slot';
+      slot.textContent = '·';
+      rows[ri].push(slot);
+      row.appendChild(slot);
+    }
+    target.appendChild(row);
+  });
+
+  const flatSlots = rows.flat();
+  const shuffled = [...puzzleWords].sort(() => Math.random() - 0.5);
+  shuffled.forEach(w => {
+    const t = document.createElement('div');
+    t.className = 'p-tile';
+    t.textContent = w;
+    t.addEventListener('click', () => {
+      if (t.classList.contains('used')) return;
+      if (w === puzzleWords[step]) {
+        flatSlots[step].textContent = w;
+        flatSlots[step].classList.add('filled');
+        t.classList.add('used');
+        step++;
+        msg.textContent = step === puzzleWords.length ? '🎉 24 字核心价值观，完美拼出！' : '✅ 正确！继续，已填 ' + step + ' / 12';
+      } else {
+        t.classList.add('used');
+        setTimeout(() => t.classList.remove('used'), 400);
+        msg.textContent = '❌ 顺序不对哦，想想「国家 → 社会 → 个人」';
+      }
+    });
+    tiles.appendChild(t);
+  });
+  msg.textContent = '从下面选词，按顺序填入上方！';
+}
+
+/* ---------- 9. 游戏6：记忆翻牌 ---------- */
+const memoryPairs = [
+  ['🏃', '锻炼'], ['📖', '阅读'], ['😴', '早睡'], ['🍎', '健康饮食'],
+  ['📝', '复习'], ['🤝', '礼貌'], ['⏰', '守时'], ['💧', '节约'],
+];
+function initMemoryGame() {
+  const grid = document.getElementById('memoryGrid');
+  const msg = document.getElementById('memoryMsg');
+  grid.innerHTML = '';
+  let first = null, lock = false, matched = 0;
+
+  const cards = memoryPairs.flatMap((p, i) => [
+    { emoji: p[0], word: p[1], pair: i },
+    { emoji: p[0], word: p[1], pair: i },
+  ]).sort(() => Math.random() - 0.5);
+
+  cards.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'mem-card';
+    card.innerHTML = '<div class="face">?</div><div class="back">' + c.emoji + '</div>';
+    card.dataset.pair = c.pair;
+    card.addEventListener('click', () => {
+      if (lock || card.classList.contains('flip') || card.classList.contains('matched')) return;
+      card.classList.add('flip');
+      if (!first) { first = card; return; }
+      lock = true;
+      if (first.dataset.pair === card.dataset.pair) {
+        first.classList.add('matched'); card.classList.add('matched');
+        first = null; lock = false; matched++;
+        msg.textContent = '✅ 配对成功！还差 ' + (memoryPairs.length - matched) + ' 对';
+        if (matched === memoryPairs.length) msg.innerHTML = '🎉 全部找齐！好习惯满分！';
+      } else {
+        msg.textContent = '❌ 不一样，再记记位置！';
+        setTimeout(() => { first.classList.remove('flip'); card.classList.remove('flip'); first = null; lock = false; }, 800);
+      }
+    });
+    grid.appendChild(card);
+  });
+  msg.textContent = '翻开卡片，寻找相同的好习惯。';
+}
+
+/* ---------- 10. 游戏7：幸运大转盘 ---------- */
+const wheelItems = [
+  '说一个好习惯', '表演一个坏习惯', '全班为你鼓掌', '讲一个诚信小故事',
+  '小组 +1 分', '模仿老师的口头禅', '对同桌说谢谢', '背出 24 字',
+  '做 5 个深蹲', '唱一句歌', '喊一句励志口号', '免答一次',
+];
+const wheelColors = ['#ff6ec4', '#ff9a3d', '#ffd166', '#6ee7b7', '#7ee8fa', '#4facfe', '#b78cff', '#f472b6', '#fb923c', '#a3e635', '#38bdf8', '#f87171'];
+function initWheelGame() {
+  const wheel = document.getElementById('wheel');
+  const result = document.getElementById('wheelResult');
+  const btn = document.getElementById('wheelSpin');
+  wheel.innerHTML = '';
+  wheel.style.transform = 'rotate(0deg)';
+
+  const n = wheelItems.length;
+  const seg = 360 / n;
+  // conic-gradient 分段
+  let grad = wheelColors.map((c, i) => c + ' ' + (i * seg) + 'deg ' + ((i + 1) * seg) + 'deg').join(', ');
+  wheel.style.background = 'conic-gradient(' + grad + ')';
+
+  wheelItems.forEach((item, i) => {
+    const label = document.createElement('div');
+    label.className = 'wheel-label';
+    label.style.transform = 'rotate(' + (i * seg + seg / 2) + 'deg) translateY(-128px)';
+    label.textContent = item;
+    wheel.appendChild(label);
+  });
+
+  let spinning = false;
+  btn.addEventListener('click', () => {
+    if (spinning) return;
+    spinning = true;
+    result.textContent = '转动中……';
+    const extra = 360 * 5 + Math.random() * 360;
+    const current = parseFloat(wheel.style.transform.replace(/[^-\d.]/g, '')) || 0;
+    const target = current + extra;
+    wheel.style.transform = 'rotate(' + target + 'deg)';
+    setTimeout(() => {
+      spinning = false;
+      const finalDeg = target % 360;
+      // 指针在顶部(0°)，转盘顺时针转，指针指向的扇区
+      const idx = Math.floor(((360 - (finalDeg % 360)) % 360) / seg);
+      result.innerHTML = '🎯 抽中了：<b>' + wheelItems[idx] + '</b>';
+    }, 4100);
+  });
+  result.textContent = '点击按钮开始！';
+}
+
+/* ---------- 11. 游戏8：你说我猜 ---------- */
+function initCharadeGame() {
+  const wordEl = document.getElementById('charadeWord');
+  const timerEl = document.getElementById('charadeTimer');
+  const btn = document.getElementById('charadeBtn');
+  const goBtn = document.getElementById('charadeGo');
+  let int = null, sec = 30;
+
+  btn.addEventListener('click', () => {
+    clearInterval(int); sec = 30; timerEl.textContent = '30'; timerEl.classList.remove('warn');
+    wordEl.textContent = charadeWords[Math.floor(Math.random() * charadeWords.length)];
+  });
+  goBtn.addEventListener('click', () => {
+    clearInterval(int); sec = 30; timerEl.textContent = '30'; timerEl.classList.remove('warn');
+    int = setInterval(() => {
+      sec--;
+      timerEl.textContent = sec;
+      if (sec <= 5) timerEl.classList.add('warn');
+      if (sec <= 0) { clearInterval(int); timerEl.textContent = '0'; timerEl.classList.remove('warn'); }
+    }, 1000);
+  });
+}
+
+/* ---------- 12. 游戏9：情景剧 ---------- */
+function initRoleplayGame() {
+  const card = document.getElementById('roleplayCard');
+  const btn = document.getElementById('roleplayBtn');
+  btn.addEventListener('click', () => {
+    card.textContent = '🎬 ' + roleplayScenes[Math.floor(Math.random() * roleplayScenes.length)];
+  });
+}
+
+/* ---------- 13. 游戏12：习惯接龙 & 宣誓 ---------- */
+function initChainGame() {
+  const promptEl = document.getElementById('chainPrompt');
+  const btn = document.getElementById('chainBtn');
+  btn.addEventListener('click', () => {
+    promptEl.textContent = '🌟 ' + chainHabits[Math.floor(Math.random() * chainHabits.length)];
+  });
+}
+
+/* ---------- 14. 启动（防御式：先显示页面，再初始化游戏） ---------- */
+// 任何未捕获的错误都显示在屏幕左下角，方便排查
+window.addEventListener('error', (e) => {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;bottom:8px;left:8px;z-index:9999;background:rgba(200,40,40,.92);color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;max-width:85%;font-family:monospace;';
+  el.textContent = '⚠️ 出错：' + (e.message || '未知错误');
+  document.body.appendChild(el);
+});
+
+renderNav(); // 先让第一页显示出来
+
+function safeInit(fn, name) {
+  try { fn(); } catch (err) { console.error('[' + name + '] 初始化失败：', err); }
+}
+safeInit(initButtonGame, '扣扣子');
+safeInit(() => renderQuiz('buzzBody', buzzData, 'buzz'), '抢答');
+safeInit(initMatchGame, '连连看');
+safeInit(initQuadrantGame, '四象限');
+safeInit(initPuzzleGame, '拼图');
+safeInit(initMemoryGame, '翻牌');
+safeInit(initWheelGame, '转盘');
+safeInit(initCharadeGame, '你说我猜');
+safeInit(initRoleplayGame, '情景剧');
+safeInit(() => renderQuiz('tfBody', tfData, 'tf'), '判断题');
+safeInit(() => renderQuiz('mcqBody', mcqData, 'mcq'), '选择题');
+safeInit(initChainGame, '宣誓');
+
+</script>
+</body>
+</html>

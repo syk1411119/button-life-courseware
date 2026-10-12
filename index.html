@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;">
+<title>扣好人生第一粒扣子 · 铜陵市第十五中学 707班</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- 动态玻璃背景 -->
+<div class="bg">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="blob b4"></div>
+  <div class="grain"></div>
+</div>
+
+<!-- 顶栏 -->
+<header class="topbar glass">
+  <button class="menu-btn glass-inner" id="menuBtn" title="打开目录">☰ 目录</button>
+  <div class="brand">
+    <span class="brand-badge">🧵</span>
+    <span class="brand-text">707班 · 扣好人生第一粒扣子</span>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress" id="progress"></div>
+  </div>
+  <div class="counter" id="counter">1 / 25</div>
+  <div class="timer glass-inner" id="timer">40:00</div>
+  <button class="timer-btn glass-inner" id="timerBtn" title="开始/暂停倒计时">▶</button>
+</header>
+
+<!-- 幻灯片容器 -->
+<main class="deck" id="deck">
+
+  <!-- ============ 封面 ============ -->
+  <section class="slide active" id="cover">
+    <div class="cover-inner">
+      <div class="cover-badge">铜陵市第十五中学 · 707班 主题班会</div>
+      <h1 class="cover-title">扣好人生<br>第一粒扣子</h1>
+      <p class="cover-sub">习惯 · 价值观 · 品格 —— 人生这件衣服，从第一粒扣子开始</p>
+      <div class="cover-tags">
+        <span class="tag">10 个知识点</span>
+        <span class="tag">12 个游戏</span>
+        <span class="tag">40 分钟</span>
+      </div>
+      <p class="cover-hint">按 → 或 空格键 开始</p>
+    </div>
+  </section>
+
+  <!-- ============ 导入 ============ -->
+  <section class="slide" id="intro">
+    <h2 class="slide-title">为什么是「扣扣子」？</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>💡 一个比喻</h3>
+        <p>衣服的<b>第一粒扣子扣错了</b>，后面所有的扣子都会跟着歪。</p>
+        <p>人生也一样——<b>青少年时期养成的价值观、习惯和品格</b>，就是人生的「第一粒扣子」。</p>
+        <p class="quote">「人生的扣子从一开始就要扣好。」</p>
+      </div>
+      <div class="card glass-card">
+        <h3>🎯 今天我们做三件事</h3>
+        <ul class="checklist">
+          <li>📚 <b>学点知识</b> —— 10 颗「人生扣子」</li>
+          <li>🎮 <b>玩点游戏</b> —— 12 个互动挑战</li>
+          <li>🙋 <b>立个 flag</b> —— 扣好我的第一粒扣子</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card glass-card tip-card">
+      <span class="tip-icon">🤔</span>
+      <p><b>互动提问：</b>今天早上，有没有同学把衣服扣子扣错过？（请举手分享「扣错后发生了什么」）</p>
+    </div>
+  </section>
+
+  <!-- ============ 第一扣 好习惯 ============ -->
+  <section class="slide" id="k1">
+    <div class="k-badge b1">第 1 扣</div>
+    <h2 class="slide-title">好习惯 —— 一生的财富</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>📅 21 天法则</h3>
+        <p>养成一个好习惯，一般需要 <b>21 天</b>；巩固固化，需要 <b>90 天</b>。</p>
+        <p>所以：<b>今天立 flag，明天就放弃</b>，那不叫坚持，叫「扣子还没扣上就先掉了」。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>✅ 好习惯清单</h3>
+        <ul class="chips">
+          <li>早睡早起</li><li>课前预习</li><li>坚持阅读</li>
+          <li>整理书桌</li><li>运动锻炼</li><li>诚实守信</li>
+          <li>主动问好</li><li>节约水电</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">播下一个行动，收获一种习惯；播下一种习惯，收获一种性格；播下一种性格，收获一种命运。—— 培根</p>
+    </div>
+  </section>
+
+  <!-- ============ 第二扣 核心价值观 ============ -->
+  <section class="slide" id="k2">
+    <div class="k-badge b2">第 2 扣</div>
+    <h2 class="slide-title">社会主义核心价值观 —— 24 字</h2>
+    <div class="values">
+      <div class="value-row"><span class="v-label">国家</span><span class="v-word">富强</span><span class="v-word">民主</span><span class="v-word">文明</span><span class="v-word">和谐</span></div>
+      <div class="value-row"><span class="v-label">社会</span><span class="v-word">自由</span><span class="v-word">平等</span><span class="v-word">公正</span><span class="v-word">法治</span></div>
+      <div class="value-row"><span class="v-label">个人</span><span class="v-word hot">爱国</span><span class="v-word hot">敬业</span><span class="v-word hot">诚信</span><span class="v-word hot">友善</span></div>
+    </div>
+    <div class="card glass-card tip-card">
+      <p><b>顺口溜记忆：</b>国家强、社会平、个人信。</p>
+      <p><b>中学生怎么做：</b>爱国（升国旗不交头接耳）、敬业（好好写作业）、诚信（考试不作弊）、友善（帮助同学）。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第三扣 时间管理 ============ -->
+  <section class="slide" id="k3">
+    <div class="k-badge b3">第 3 扣</div>
+    <h2 class="slide-title">时间管理 —— 挤一挤总会有</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>⏱️ 番茄工作法</h3>
+        <p><b>25 分钟</b>专注学习 + <b>5 分钟</b>休息，循环进行。</p>
+        <p>脑子像手机，一直用会发烫，需要「充个电」。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>🧩 碎片时间</h3>
+        <p>课间 10 分钟背 <b>2 个单词</b>，一天好几个课间，一年就是……（你自己算，反正很多！）</p>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">时间就像海绵里的水，只要愿挤，总还是有的。—— 鲁迅</p>
+    </div>
+  </section>
+
+  <!-- ============ 第四扣 目标管理 ============ -->
+  <section class="slide" id="k4">
+    <div class="k-badge b4">第 4 扣</div>
+    <h2 class="slide-title">目标管理 —— SMART 原则</h2>
+    <div class="smart">
+      <div class="smart-item"><b>S</b>具体</div>
+      <div class="smart-item"><b>M</b>可衡量</div>
+      <div class="smart-item"><b>A</b>能做到</div>
+      <div class="smart-item"><b>R</b>相关</div>
+      <div class="smart-item"><b>T</b>有时限</div>
+    </div>
+    <div class="card glass-card tip-card">
+      <p>❌ 「我要考第一」—— 这是<b>梦想</b>，不是目标。</p>
+      <p>✅ 「每天多做 3 道题，月考前进 5 名」—— 这才是<b>目标</b>。</p>
+      <p>把大象装进冰箱要分三步；把目标装进脑子，也要<b>拆成小步</b>。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第五扣 诚信 ============ -->
+  <section class="slide" id="k5">
+    <div class="k-badge b5">第 5 扣</div>
+    <h2 class="slide-title">诚信 —— 立身之本</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>🐺 狼来了</h3>
+        <p>放羊娃为什么最后没人信了？——因为他把「诚信」这粒扣子，当成<b>纽扣电池</b>，随手就扔了。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>📜 诚信清单</h3>
+        <ul class="checklist">
+          <li>考试不作弊、作业不抄袭</li>
+          <li>说到做到，不撒谎</li>
+          <li>借了橡皮记得还</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">人无信不立。—— 孔子</p>
+    </div>
+  </section>
+
+  <!-- ============ 第六扣 责任 ============ -->
+  <section class="slide" id="k6">
+    <div class="k-badge b6">第 6 扣</div>
+    <h2 class="slide-title">责任 —— 对自己、对他人负责</h2>
+    <div class="grid-3">
+      <div class="card glass-card">
+        <h3>🙋 对自己</h3>
+        <p>好好学习、锻炼身体、按时完成作业，不当「拖延症晚期患者」。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>🏠 对家庭</h3>
+        <p>帮妈妈刷个碗、体谅父母，别把「我在打游戏」挂在嘴边。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>🏫 对班级</h3>
+        <p>值日认真做、维护集体荣誉，别让流动红旗「流」到隔壁班。</p>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">天下兴亡，匹夫有责。咱们班兴亡，人人有责。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第七扣 感恩 ============ -->
+  <section class="slide" id="k7">
+    <div class="k-badge b7">第 7 扣</div>
+    <h2 class="slide-title">感恩 —— 常怀感恩之心</h2>
+    <div class="grid-3">
+      <div class="card glass-card"><h3>👨‍👩‍👧 父母</h3><p>赚钱供你上学，比上班还累，多说一句「谢谢爸妈」。</p></div>
+      <div class="card glass-card"><h3>👩‍🏫 老师</h3><p>批作业批到怀疑人生，还坚持给你讲题。</p></div>
+      <div class="card glass-card"><h3>🤝 同学</h3><p>借你橡皮、帮你讲题、考试不举报你（开玩笑）。</p></div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">滴水之恩，当涌泉相报。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第八扣 自律 ============ -->
+  <section class="slide" id="k8">
+    <div class="k-badge b8">第 8 扣</div>
+    <h2 class="slide-title">自律 —— 先做该做的，再做想做的</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>📱 手机管理</h3>
+        <p>手机是「第一粒扣子」的<b>最大敌人</b>！晚上躺被窝刷手机，刷着刷着天亮了，第二天上课打瞌睡，还怪老师讲课像催眠曲。</p>
+      </div>
+      <div class="card glass-card">
+        <h3>🏆 自律者自由</h3>
+        <ul class="checklist">
+          <li>定时使用手机，限时游戏</li>
+          <li>手机放客厅充电，睡个好觉</li>
+          <li>先写作业，再放松</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">自律的程度，决定你人生的高度。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第九扣 安全 ============ -->
+  <section class="slide" id="k9">
+    <div class="k-badge b9">第 9 扣</div>
+    <h2 class="slide-title">安全 —— 这根扣子松了，全白搭</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>🚗 交通安全</h3>
+        <ul class="checklist"><li>红灯停、绿灯行</li><li>骑电动车戴头盔</li><li>不闯红灯、不并排骑行</li></ul>
+      </div>
+      <div class="card glass-card">
+        <h3>🌊 防溺水 & 网络</h3>
+        <ul class="checklist"><li>不私自下水游泳</li><li>不泄露个人信息</li><li>不轻信陌生网友</li><li>拒绝校园欺凌</li></ul>
+      </div>
+    </div>
+    <div class="card glass-card tip-card">
+      <p>⚠️ <b>记住：</b>安全这根扣子松了，其它扣子扣得再整齐也没用。</p>
+    </div>
+  </section>
+
+  <!-- ============ 第十扣 礼仪 ============ -->
+  <section class="slide" id="k10">
+    <div class="k-badge b10">第 10 扣</div>
+    <h2 class="slide-title">礼仪 —— 文明的「Wi-Fi」</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>🗣️ 文明用语</h3>
+        <ul class="chips"><li>请</li><li>谢谢</li><li>对不起</li><li>没关系</li></ul>
+      </div>
+      <div class="card glass-card">
+        <h3>🏫 校园礼仪</h3>
+        <ul class="checklist"><li>见老师主动问好</li><li>同学之间不取外号</li><li>排队不插队</li><li>公共场所轻声</li></ul>
+      </div>
+    </div>
+    <div class="card glass-card quote-card">
+      <p class="quote">文明的人走到哪儿都受欢迎——就像 Wi-Fi，大家都想连。</p>
+    </div>
+  </section>
+
+  <!-- ============ 游戏1 扣扣子大作战 ============ -->
+  <section class="slide game" id="g1">
+    <div class="g-badge">🎮 游戏 1</div>
+    <h2 class="slide-title">扣扣子大作战</h2>
+    <p class="game-desc">把 12 颗扣子全部「扣好」，比谁速度快！</p>
+    <div class="btn-box" id="btnBox"></div>
+    <p class="game-status" id="btnStatus">点击扣子，开始！</p>
+  </section>
+
+  <!-- ============ 游戏2 知识抢答 ============ -->
+  <section class="slide game" id="g2">
+    <div class="g-badge">🎮 游戏 2</div>
+    <h2 class="slide-title">知识抢答</h2>
+    <p class="game-desc">看题目，比谁答得快！（点「揭晓答案」）</p>
+    <div class="quiz-body" id="buzzBody"></div>
+  </section>
+
+  <!-- ============ 游戏3 连连看 ============ -->
+  <section class="slide game" id="g3">
+    <div class="g-badge">🎮 游戏 3</div>
+    <h2 class="slide-title">好习惯连连看</h2>
+    <p class="game-desc">先点左边「习惯」，再点右边「好处」，连成一对。</p>
+    <div class="match-board" id="matchBoard"></div>
+    <p class="game-status" id="matchMsg">开始配对！</p>
+  </section>
+
+  <!-- ============ 游戏4 时间四象限 ============ -->
+  <section class="slide game" id="g4">
+    <div class="g-badge">🎮 游戏 4</div>
+    <h2 class="slide-title">时间四象限</h2>
+    <p class="game-desc">点选下面任务，再点它所属的象限，把它送回家。</p>
+    <div class="quad-grid" id="quadGrid"></div>
+    <div class="quad-pool" id="quadPool"></div>
+    <p class="game-status" id="quadMsg">得分：0 / 0</p>
+  </section>
+
+  <!-- ============ 游戏5 价值观拼图 ============ -->
+  <section class="slide game" id="g5">
+    <div class="g-badge">🎮 游戏 5</div>
+    <h2 class="slide-title">价值观拼图</h2>
+    <p class="game-desc">按「国家 → 社会 → 个人」顺序，点出正确的 24 字。</p>
+    <div class="puzzle-target" id="puzzleTarget"></div>
+    <div class="puzzle-tiles" id="puzzleTiles"></div>
+    <p class="game-status" id="puzzleMsg">从下面选词填入上方！</p>
+  </section>
+
+  <!-- ============ 游戏6 记忆翻牌 ============ -->
+  <section class="slide game" id="g6">
+    <div class="g-badge">🎮 游戏 6</div>
+    <h2 class="slide-title">好习惯记忆翻牌</h2>
+    <p class="game-desc">翻到两张相同的好习惯，全部配对成功！</p>
+    <div class="memory-grid" id="memoryGrid"></div>
+    <p class="game-status" id="memoryMsg">翻开卡片，寻找相同的好习惯。</p>
+  </section>
+
+  <!-- ============ 游戏7 大转盘 ============ -->
+  <section class="slide game" id="g7">
+    <div class="g-badge">🎮 游戏 7</div>
+    <h2 class="slide-title">幸运大转盘</h2>
+    <p class="game-desc">转一下，命运交给转盘！</p>
+    <div class="wheel-wrap" id="wheelWrap">
+      <div class="wheel-pointer"></div>
+      <div class="wheel" id="wheel"></div>
+    </div>
+    <button class="big-btn" id="wheelSpin">🎡 转动转盘</button>
+    <p class="game-status" id="wheelResult">点击按钮开始！</p>
+  </section>
+
+  <!-- ============ 游戏8 你说我猜 ============ -->
+  <section class="slide game" id="g8">
+    <div class="g-badge">🎮 游戏 8</div>
+    <h2 class="slide-title">你说我猜</h2>
+    <p class="game-desc">一人描述（不能说词里的字），一人猜，30 秒！</p>
+    <div class="charade-word glass-card" id="charadeWord">点击下方按钮抽词</div>
+    <div class="charade-timer" id="charadeTimer">30</div>
+    <div class="btn-row">
+      <button class="big-btn" id="charadeBtn">🎲 抽一个词</button>
+      <button class="big-btn alt" id="charadeGo">⏱️ 开始 30 秒</button>
+    </div>
+  </section>
+
+  <!-- ============ 游戏9 情景剧 ============ -->
+  <section class="slide game" id="g9">
+    <div class="g-badge">🎮 游戏 9</div>
+    <h2 class="slide-title">情景剧表演</h2>
+    <p class="game-desc">抽一个情景，分角色演出来，看谁演技在线！</p>
+    <div class="roleplay-card glass-card" id="roleplayCard">点击下方按钮抽场景</div>
+    <button class="big-btn" id="roleplayBtn">🎭 抽一个情景</button>
+  </section>
+
+  <!-- ============ 游戏10 判断题闯关 ============ -->
+  <section class="slide game" id="g10">
+    <div class="g-badge">🎮 游戏 10</div>
+    <h2 class="slide-title">判断题闯关</h2>
+    <p class="game-desc">判断对错，看看你能对几题！</p>
+    <div class="quiz-body" id="tfBody"></div>
+  </section>
+
+  <!-- ============ 游戏11 选择题擂台 ============ -->
+  <section class="slide game" id="g11">
+    <div class="g-badge">🎮 游戏 11</div>
+    <h2 class="slide-title">选择题擂台</h2>
+    <p class="game-desc">四个选项，选出唯一正确答案！</p>
+    <div class="quiz-body" id="mcqBody"></div>
+  </section>
+
+  <!-- ============ 游戏12 宣誓接龙 ============ -->
+  <section class="slide game" id="g12">
+    <div class="g-badge">🎮 游戏 12</div>
+    <h2 class="slide-title">习惯接龙 & 宣誓</h2>
+    <p class="game-desc">随机抽一个好习惯，全班一起接龙；最后齐读宣誓词。</p>
+    <div class="chain-prompt glass-card" id="chainPrompt">点击按钮，抽一个「今日好习惯」</div>
+    <button class="big-btn" id="chainBtn">🎲 抽一个好习惯</button>
+    <div class="oath glass-card">
+      <h3>🙋 全班宣誓</h3>
+      <p id="oathText">我宣誓：从今天起，扣好人生第一粒扣子——养成好习惯，践行价值观，珍惜时间，诚实守信，心怀感恩，自律自强，做新时代好少年！</p>
+    </div>
+  </section>
+
+  <!-- ============ 总结 ============ -->
+  <section class="slide" id="summary">
+    <h2 class="slide-title">总结 · 扣好第一粒扣子</h2>
+    <div class="grid-2">
+      <div class="card glass-card">
+        <h3>🔑 记住三句话</h3>
+        <ul class="checklist big">
+          <li>习惯决定性格，性格决定命运</li>
+          <li>先做该做的，再做想做的</li>
+          <li>人生的扣子，从第一粒就要扣好</li>
+        </ul>
+      </div>
+      <div class="card glass-card">
+        <h3>✊ 今天立个 flag</h3>
+        <p>选一个你能做到的小行动，坚持 21 天：</p>
+        <ul class="chips">
+          <li>每天早睡 10 分钟</li>
+          <li>每天阅读 20 分钟</li>
+          <li>每天整理书桌</li>
+          <li>每天说一句「谢谢」</li>
+          <li>每天运动 15 分钟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card glass-card quote-card end-card">
+      <p class="quote big-q">愿每一位同学，都扣好人生的第一粒扣子，<br>走好青春每一步！</p>
+      <p class="end-note">🎉 班会结束，谢谢大家！</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- 底部导航 -->
+<footer class="nav glass">
+  <button class="nav-btn" id="prev">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="next">下一页 →</button>
+</footer>
+
+<!-- 目录菜单 -->
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-panel">
+    <div class="menu-head">
+      <span>📋 课件目录</span>
+      <button class="menu-close" id="menuClose">✕</button>
+    </div>
+    <div id="menuList"></div>
+  </div>
+</div>
+
+<script src="renderer.js"></script>
+</body>
+</html>
