@@ -538,39 +538,63 @@ function initWheelGame() {
   const result = document.getElementById('wheelResult');
   const btn = document.getElementById('wheelSpin');
   wheel.innerHTML = '';
-  wheel.style.transform = 'rotate(0deg)';
 
   const n = wheelItems.length;
   const seg = 360 / n;
-  // conic-gradient 分段
+  const R = 120; // 文字到圆心的距离
+
   let grad = wheelColors.map((c, i) => c + ' ' + (i * seg) + 'deg ' + ((i + 1) * seg) + 'deg').join(', ');
   wheel.style.background = 'conic-gradient(' + grad + ')';
 
-  wheelItems.forEach((item, i) => {
-    const label = document.createElement('div');
-    label.className = 'wheel-label';
-    label.style.transform = 'rotate(' + (i * seg + seg / 2) + 'deg) translateY(-128px)';
-    label.textContent = item;
-    wheel.appendChild(label);
+  const labels = wheelItems.map((item) => {
+    const el = document.createElement('div');
+    el.className = 'wheel-label';
+    el.textContent = item;
+    wheel.appendChild(el);
+    return el;
   });
 
+  let rotation = 0;
   let spinning = false;
+
+  function place(rot) {
+    // 每段文字放在自己的角度，同时反向旋转，让文字始终保持"正着"可读
+    labels.forEach((el, i) => {
+      const ang = rot + i * seg + seg / 2;
+      el.style.transform = 'translate(-50%, -50%) rotate(' + ang + 'deg) translateY(-' + R + 'px) rotate(' + (-ang) + 'deg)';
+    });
+  }
+
+  wheel.style.transform = 'rotate(0deg)';
+  place(0);
+
   btn.addEventListener('click', () => {
     if (spinning) return;
     spinning = true;
     result.textContent = '转动中……';
+    const start = rotation;
     const extra = 360 * 5 + Math.random() * 360;
-    const current = parseFloat(wheel.style.transform.replace(/[^-\d.]/g, '')) || 0;
-    const target = current + extra;
-    wheel.style.transform = 'rotate(' + target + 'deg)';
-    setTimeout(() => {
-      spinning = false;
-      const finalDeg = target % 360;
-      // 指针在顶部(0°)，转盘顺时针转，指针指向的扇区
-      const idx = Math.floor(((360 - (finalDeg % 360)) % 360) / seg);
-      result.innerHTML = '🎯 抽中了：<b>' + wheelItems[idx] + '</b>';
-    }, 4100);
+    const dur = 4000;
+    const t0 = performance.now();
+
+    function step(now) {
+      let t = (now - t0) / dur;
+      if (t > 1) t = 1;
+      const e = 1 - Math.pow(1 - t, 3); // ease-out 缓出
+      rotation = start + extra * e;
+      wheel.style.transform = 'rotate(' + rotation + 'deg)';
+      place(rotation);
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        spinning = false;
+        const idx = Math.floor(((360 - (rotation % 360)) % 360) / seg);
+        result.innerHTML = '🎯 抽中了：<b>' + wheelItems[idx] + '</b>';
+      }
+    }
+    requestAnimationFrame(step);
   });
+
   result.textContent = '点击按钮开始！';
 }
 
